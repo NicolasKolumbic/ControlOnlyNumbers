@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="controlNumbers.css" rel="stylesheet" />
+    <style>
+        input.azul {
+            background-color: rgba(55, 50, 240, 0.5);
+        }
+    </style>
+
+</head>
+
+<body ng-app="myApp">
+    <div ng-controller="OnlyNumbersController" class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <form method="GET" ng-submit="Enviar($event)" class="form-inline">
+                    <div>
+                        <label for="ValorPerCapita">Flotante</label>
+                        <control-only-numbers id="ValorPerCapita" model="Datos.MontoCapitas" required="true" beforecoma="10" aftercoma="3"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoDosId">Flotante 2</label>
+                        <control-only-numbers id="MontoDosId" model="Datos.MontoDos" required="true" aftercoma="3"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoTresId">Flotante 3</label>
+                        <control-only-numbers id="MontoTresId" model="Datos.MontoTres" readonly="true"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoCuatroId">Flotante 4</label>
+                        <control-only-numbers id="MontoCuatroId" model="MontoCuatro" disabled="true"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoQuintoId">Flotante 5</label>
+                        <control-only-numbers id="MontoQuintoId" model="MontoQuinto"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoSextoId">Integer 6</label>
+                        <control-only-numbers id="MontoSextoId" model="MontoSexto" miles="false" float="false"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoSeptimoId">Integer 7</label>
+                        <control-only-numbers id="MontoSeptimoId" model="Datos.MontoSeptimo" miles="false" float="false" zeros="false"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="dato2">Enteros</label>
+                        <control-only-numbers id="datos" model="Datos.Monto" required="true" float="false"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoOctavoId">Integer 8</label>
+                        <control-only-numbers id="MontoOctavoId" model="Datos.MontoOctavo" miles="false" zeros="false"></control-only-numbers>
+                    </div>
+                    <div>
+                        <label for="MontoNovenoId">Integer 9</label>
+                        <control-only-numbers id="MontoNovenoId" model="Datos.MontoNoveno" ng-class="{azul: true}"></control-only-numbers>
+                    </div>
+                    <div>
+                            <label for="MontoNovenoId">Integer 10</label>
+                            <control-only-numbers id="MontoDecimoId" model="MontoDecimo" prefix="true" pcharacter="currency"></control-only-numbers>
+                        </div>
+                    <input type="submit" id="env" name="env" value="enviar" class="btn btn-success" />
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/controlNumbers.js"></script>
+<script type="text/javascript">
+    angular.module('myApp')
+        .controller('OnlyNumbersController', OnlyNumbersController);
+
+    function OnlyNumbersController($scope) {
+
+        $scope.Datos = {
+            MontoCapitas: 1504.00,
+            Monto: "1452",
+            MontoDos: "322",
+            MontoTres: 32,
+            MontoSeptimo: 0,
+            MontoOctavo: 0,
+            MontoNoveno: 12,
+
+        }
+        $scope.MontoCuatro = "36";
+        $scope.MontoQuinto = "31456";
+        $scope.MontoSexto = "0";
+        $scope.MontoDecimo = "12";
+
+
+        $scope.Enviar = function (event) {
+
+            var s = $scope;
+        }
+    }
+
+</script>
+
+
+</html>
