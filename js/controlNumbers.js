@@ -7,84 +7,28 @@ angular
                 scope: {
                     id: '@',
                     model: '=',
-                    ngClass: '=',
-                    required: '=',
-                    readonly: '@',
-                    float: '@',
-                    beforecoma: '@',
-                    aftercoma: '@',
-                    prefix: '@',
-                    subfix: '@',
-                    pcharacter: '@',
-                    scharacter: '@',
-                    decimal: '@',
-                    miles: '@',
-                    cssclass: '@',
-                    value: '=',
-                    setdisabled: '=',
-                    zeros: '@',
-                    onBlur: "="
+                    ngClass: '=?',
+                    required: '=?',
+                    readonly: '@?',
+                    float: '@?',
+                    beforecoma: '@?',
+                    aftercoma: '@?',
+                    prefix: '@?',
+                    subfix: '@?',
+                    pcharacter: '@?',
+                    scharacter: '@?',
+                    decimal: '@?',
+                    miles: '@?',
+                    cssclass: '@?',
+                    setdisabled: '=?',
+                    zeros: '@?',
+                    onBlur: "=?"
                 },
                 templateUrl: './controlOnlyNumbers.html',
-                link: function (scope, elm, attrs) {                  
-                    scope.Setting.model = attrs.model;
-                    if (scope.Setting.disabled) elm.find("input").prop('disabled', true);
-                   
-                    elm.on('keydown', function (event) {
-                        scope.Methods.keyUp.call(this, event);
-                    })
-                    elm.on('keyup', function (event) {
-                        var obj = this.children[0].children[0];
-                        obj.value = obj.value.replace(/[^0-9,.]/g, '');
-                    });
-                       
-                    if(scope.Setting.prefix)elm[0].children[0].children[0].innerHTML = scope.Methods.SetPrefix(scope.Setting.pcharacter);
-                    if(scope.Setting.subfix)elm[0].children[0].children[3].innerHTML = scope.Methods.SetPrefix(scope.Setting.scharacter);
+                link: function (scope, elm, attrs) {
 
-                    elm.find('input').on('blur', function (event) {
-                        scope.Methods.blur.call(this, event);
-                    });
-                   
-    
-    
-                },
-                controller: Numbercontroller,
-            };
-        });
-
-        function Numbercontroller($scope) {
-            
-            
-            if ($scope.hasOwnProperty("$parent") && !$scope.$parent.hasOwnProperty("OnlyNumbers")) {
-            
-                $scope.$parent.OnlyNumbers = (function (d, w) {
-            
-                    var Format = {
-                        Decimal: function (value, dec) {
-                            var cd = [/\,/, '.'];
-                            cd = dec == ',' ? [/\./, ','] : cd;
-                            value = value.toString().replace(/\./g, '');
-                            return value.toString().replace(cd[0], cd[1]);
-                        },
-                        Integer: function (value) {
-                            value = value.toString().replace(/\./g, '');
-                            return parseInt(value).toString();
-            
-                        },
-                        Miles: function (value) {
-                            value = value.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
-                            value = value.split('').reverse().join('').replace(/^[\.]/, '');
-                            return value;
-                        },
-            
-                    };
-            
-                    function OnlyNumbers() {
-                        this.value = "";
-                        this.node = null;
-            
-                    }
-            
+                    var OnlyNumbers = scope.$parent.OnlyNumbers;
+                    
                     OnlyNumbers.prototype.Find = function (md, id) {
                         var _brk = md.split('.');
                         var s = $scope.$parent;
@@ -131,13 +75,115 @@ angular
                         return this.value;
                     }
             
-                    w.OnlyNumbers = new OnlyNumbers();
+                    var _newOnlyNumbersControl = new OnlyNumbers();
+                    _newOnlyNumbersControl.node = document.getElementById(attrs.id);
+                    _newOnlyNumbersControl.value = scope.model;
+                    _newOnlyNumbersControl._model = attrs.model;
+                    _newOnlyNumbersControl._id = attrs.id;
+                    _newOnlyNumbersControl.scope = scope;
+
+                    scope.$parent.$parent[attrs.id] = _newOnlyNumbersControl;
+
+                    scope.Setting.modelName = attrs.model;
+                    if (scope.Setting.disabled) elm.find("input").prop('disabled', true);
+                   
+                    elm.on('keydown', function (event) {
+                        scope.Methods.keyUp.call(this, event);
+                    })
+                    elm.on('keyup', function (event) {
+                        var obj = this.children[0].children[0];
+                        if(obj.value) obj.value = obj.value.replace(/[^0-9,.]/g, '');
+                    });
+                       
+                    if(scope.Setting.prefix)elm[0].children[0].children[0].innerHTML = scope.Methods.SetPrefix(scope.Setting.pcharacter);
+                    if(scope.Setting.subfix)elm[0].children[0].children[3].innerHTML = scope.Methods.SetPrefix(scope.Setting.scharacter);
+
+                    elm.find('input').on('blur', function (event) {
+                        scope.Methods.blur.call(this, event);
+                    });
+                   
+    
+    
+                },
+                controller: Numbercontroller,
+            };
+        });
+
+        function Numbercontroller($scope) {
             
-                    return w.OnlyNumbers;
             
-                })(document, window);
+            if ($scope.hasOwnProperty("$parent") && !$scope.$parent.hasOwnProperty("OnlyNumbers")) {
+                  
+                    var Format = {
+                        Decimal: function (value, dec) {
+                            var cd = [/\,/, '.'];
+                            cd = dec == ',' ? [/\./, ','] : cd;
+                            value = value.toString().replace(/\./g, '');
+                            return value.toString().replace(cd[0], cd[1]);
+                        },
+                        Integer: function (value) {
+                            value = value.toString().replace(/\./g, '');
+                            return parseInt(value).toString();
+            
+                        },
+                        Miles: function (value) {
+                            value = value.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
+                            value = value.split('').reverse().join('').replace(/^[\.]/, '');
+                            return value;
+                        },
+            
+                    };
+            
+                    $scope.$parent.OnlyNumbers = function () {
+                        this.value = "";
+                        this.node = null;
+                        this.selector = "";
+                        this._id = "";
+                        this._valid = true;
+                        this._model = "";
+                        this.scope = null;
+                    };
             
             }
+
+            $scope.Setting = {
+                modelName: "",
+                typeError: $scope.typeError
+         
+            };
+
+            if(angular.isUndefined($scope.id)){
+                console.error("Debe definirse un id para el control.");
+            }
+
+            $scope.model = angular.isUndefined($scope.model)?"": $scope.model;
+            $scope.ngclass = angular.isUndefined($scope.ngclass)?"": $scope.ngclass;
+            $scope.required = angular.isUndefined($scope.required)?false: $scope.required;
+            $scope.readonly = angular.isUndefined($scope.readonly)?false: $scope.readonly;
+            $scope.label = angular.isUndefined($scope.label)?"": $scope.label;
+            $scope.cssclass = angular.isUndefined($scope.cssclass)?"": $scope.cssclass;
+            $scope.setdisabled = angular.isUndefined($scope.setdisabled)?false: $scope.setdisabled;
+            //$scope.typeError = angular.isUndefined($scope.typeError)?CONSTANTES.TYPESERRORS.DOWN : CONSTANTES.TYPESERRORS[$scope.typeError.toUpperCase()];
+            $scope.onBlur = angular.isUndefined($scope.onBlur)?null: $scope.onBlur;
+            $scope.buildComplete = angular.isUndefined($scope.buildComplete)?null: $scope.buildComplete;
+            $scope.errorMessage = angular.isUndefined($scope.errorMessage)?"": $scope.errorMessage;
+            $scope.errorMarked = angular.isUndefined($scope.errorMarked)?"": $scope.errorMarked;
+            $scope.labelClass = angular.isUndefined($scope.labelClass)?"col-xs-12 col-sm-12 col-md-2 col-lg-2":$scope.labelClass;
+            $scope.inputContentClass = angular.isUndefined($scope.inputContentClass)?"col-xs-12 col-sm-12 col-md-10 col-lg-10":$scope.inputContentClass;
+            $scope.float = !$scope.float ? true : !!$scope.float;
+            $scope.beforecoma = !$scope.beforecoma ? 4 : parseInt($scope.beforecoma);
+            $scope.aftercoma = !$scope.aftercoma ? 2 : parseInt($scope.aftercoma);
+            $scope.prefix = !$scope.prefix ? false : !!$scope.prefix;
+            $scope.pcharacter = !$scope.pcharacter ? "" : !!$scope.pcharacter;
+            $scope.scharacter = !$scope.scharacter ? "" : !!$scope.scharacter;
+            $scope.decimal = !$scope.decimal ? 2 : parseInt($scope.decimal),
+            $scope.miles = !$scope.miles ? true : !!$scope.miles;
+            $scope.cssclass = !$scope.cssClass ? "" : $scope.cssClass;
+            $scope.default = !$scope.default ? "" : $scope.default;
+            $scope.zeros = !$scope.zeros ? true : !!$scope.zeros;
+            $scope.value = !$scope.value && $scope.value != 0 && $scope.value != '0' ? "" : $scope.value;
+            $scope.setdisabled = !$scope.setdisabled ? false : !!$scope.setdisabled,
+            $scope.onBlur = !$scope.onBlur ? null : $scope.onBlur
             
             $scope.Setting = {
                 id: !$scope.id ? "" : $scope.id,
@@ -180,10 +226,11 @@ angular
                 blur: function (event) {
                     var _ = $scope.Methods;
                     var setting = $scope.Setting;
-                    var m = setting.model.split(".");
+                    var s = $scope;
+                    var m = setting.modelName.split(".");
                     var value = _.findScope($scope, m, setting, this, _, event);
                     var splitModel = function () {
-                        m.length > 1 ? $scope.$parent[m[0]][m[1]] = "": $scope.$parent[m[0]] = "";
+                        m.length > 1 ? s.$parent[m[0]][m[1]] = "": s.$parent[m[0]] = "";
                         
                     }
                     var blurObject ={
@@ -194,23 +241,23 @@ angular
             
                     if (value.value != undefined && value.res && !/\<\!\>/.test(value.value.toString())) {
                         
-                        value = _.EliminarCaracteresNoNumericos(setting, value.value, value);
+                        value = _.EliminarCaracteresNoNumericos(value.value, value);
                         blurObject.numbers = parseFloat(value.value);
             
-                        if (value.value.indexOf(',') == -1 && value.value.replace(/\,/, '').length > setting.beforecoma) {
+                        if (value.value.indexOf(',') == -1 && value.value.replace(/\,/, '').length > s.beforecoma) {
                             this.value = ""
-                            $scope.model = "";
-                            $scope.$apply(splitModel);
+                            s.model = "";
+                            $s.$apply(splitModel);
                             return;
             
                         }
             
-                        if (setting.float && value.value != "") {
-                            _.BlurFloatValidation(value.value, value, setting, _)
+                        if (s.float && value.value != "") {
+                            _.BlurFloatValidation(value.value, value, s, _)
                         } else if (value.value != "") {                    
                             value.value = parseInt(value.value).toString();
-                            if (setting.miles && value.value.toString().length > 3) {
-                                _.PuntosMiles(value.value + ",", value, setting);
+                            if (s.miles && value.value.toString().length > 3) {
+                                _.PuntosMiles(value.value + ",", value, s);
                             }
             
                         }
@@ -218,16 +265,16 @@ angular
                      
                     } else if (value.value == "" && !value.res) {
                         this.value = "";
-                        $scope.$apply(splitModel);
+                        s.$apply(splitModel);
                         return;
                     }
             
                     this.value = value.value != undefined ? value.value : "";
-                    $scope.actualizarModelo(setting.model, setting.id);
+                    s.actualizarModelo(setting.modelName, s.id);
             
-                    if (setting.onBlur != null && typeof setting.onBlur == "function") {
+                    if (s.onBlur != null && typeof s.onBlur == "function") {
                         blurObject.newValue = value.value;
-                        setting.onBlur(blurObject, setting.model, setting.id);
+                        s.onBlur(blurObject, setting.modelName, s.id);
                        
                     }
                    
@@ -235,8 +282,9 @@ angular
                 keyUp: function (event, ModelCtrl) {
             
                     var _ = $scope.Methods;
+                    var s = $scope;
                     var setting = $scope.Setting;
-                    var value = _.findScope($scope, setting.model.split("."), setting, this, _, event);
+                    var value = _.findScope($scope, setting.modelName.split("."), setting, this, _, event);
                     
                     if (value.res) { 
                         
@@ -244,19 +292,19 @@ angular
                             _.Stop(event);
                         }
                         else if (event.which == 188 || event.which == 44) {
-                            if (!value.value || value.value.indexOf(',') != -1 || !setting.float) {
+                            if (!value.value || value.value.indexOf(',') != -1 || !s.float) {
                                 _.Stop(event);
                             }
-                        } else if (value.value == '0' && !setting.float && (event.which == 96 || event.which == 48)) {
+                        } else if (value.value == '0' && !s.float && (event.which == 96 || event.which == 48)) {
                             _.Stop(event);
                         } else if (event.which == 64 || event.which == 16) {
                             _.Stop(event);
                         } else if ((event.which >= 48 && event.which <= 57) || (event.which >= 96 && event.which <= 105)) {
                            
-                            if (setting.float) {
-                                if (value.value) _.KeyFloatValidation(setting, value.value, value, event, this, _);
-                            } else if (!setting.float) {
-                                if (value.value) _.KeyIntergerValidation(setting, value.value, value, event, this, _);
+                            if (s.float) {
+                                if (value.value) _.KeyFloatValidation(s, value.value, value, event, this, _);
+                            } else if (!s.float) {
+                                if (value.value) _.KeyIntergerValidation(s, value.value, value, event, this, _);
                             }
                         } else if ([8, 13, 27, 37, 38, 39, 40, 46, 9].indexOf(event.which) > -1) {
                           
@@ -264,7 +312,7 @@ angular
                         } else {
                             _.Stop(event);
                         }
-                    } else if (!value.res && !setting.zeros && /96|48/.test(event.which.toString())) {
+                    } else if (!value.res && !s.zeros && /96|48/.test(event.which.toString())) {
                        
                         var cursor = this.children[0].children[0].selectionStart;
                         var end = this.children[0].children[0].selectionEnd;
@@ -272,19 +320,19 @@ angular
                         var v = this.children[0].children[0].value;
                         var _break = v.indexOf(',') != -1 ? v.split(',') : [v, ""];
                         if (coma != -1 && cursor > coma) {
-                            if (_break[1].length > setting.aftercoma - 1 && cursor == end) {                     
+                            if (_break[1].length > s.aftercoma - 1 && cursor == end) {                     
                                 _.Stop(e);
                             }
                         } else {
-                            if (setting.miles && _break[0] != '') _break[0] = _break[0].replace(/\./g, '');
-                            if ((_break[0].length > setting.beforecoma - 1 && coma) && cursor == end) {
+                            if (s.miles && _break[0] != '') _break[0] = _break[0].replace(/\./g, '');
+                            if ((_break[0].length > s.beforecoma - 1 && coma) && cursor == end) {
                                 _.Stop(e);
                             }                 
             
                         }
                      
                         
-                    } else if ((value.value == "" && !value.res) || (value.value == "0," && (event.which == 188 || event.which == 44)) || (!value.res && !setting.zeros && /96|48/.test(event.which.toString()))) {
+                    } else if ((value.value == "" && !value.res) || (value.value == "0," && (event.which == 188 || event.which == 44)) || (!value.res && !s.zeros && /96|48/.test(event.which.toString()))) {
                         _.Stop(event);
                     }
                    
@@ -371,7 +419,7 @@ angular
                     obj.res = true;
                     return obj;
                 },
-                EliminarCaracteresNoNumericos: function (setting, text, obj) {
+                EliminarCaracteresNoNumericos: function (text, obj) {
                     if (text && text.indexOf('.') != -1) obj.value = text.replace(/\./g, '');
                     return obj;
                 },
@@ -382,8 +430,7 @@ angular
                     obj.value = obj.value.replace(/\./, ",");
             
                     if (setting.miles) {
-                        obj = _.PuntosMiles(obj.value, obj, setting);
-                       
+                        obj = _.PuntosMiles(obj.value, obj, setting);                  
                     }
                    
                     return obj;
@@ -407,15 +454,15 @@ angular
             
                     var txt = "";
                     var err = "";
-                    if (!$scope.Setting.float) {
+                    if (!$scope.float) {
                         txt = value.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
                         txt = txt.split('').reverse().join('').replace(/^[\.]/, '');
             
                     } else {
                         value = typeof value == 'string' ? value.replace(/\,/, '.') : value;
-                        value = parseFloat(value).toFixed($scope.Setting.aftercoma);
+                        value = parseFloat(value).toFixed($scope.aftercoma);
                         var _break = value.toString().replace(/\./, ',').split(',');
-                        if (_break[0].length > $scope.Setting.beforecoma || _break[1].length > $scope.Setting.aftercoma) {
+                        if (_break[0].length > $scope.beforecoma || _break[1].length > $scope.aftercoma) {
                             err = "<!>";
                             console.error("%cError: La configuración actual del Control (beforecoma o aftercoma) no soporta el valor ingresado por ng-model ", "color:red;padding:3px;font-size:14px;");
                         }
@@ -423,7 +470,7 @@ angular
                         txt = txt.split('').reverse().join('').replace(/^[\.]/, '');
                         txt = err + txt + "," + _break[1] + err;
                     }
-                    if(CONSTANTES.regexZeros.test(txt) && !$scope.Setting.zeros){
+                    if(CONSTANTES.regexZeros.test(txt) && !$scope.zeros){
                         txt = "";
                     }
                     $scope.model = txt
