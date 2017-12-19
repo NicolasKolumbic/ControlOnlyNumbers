@@ -10,7 +10,7 @@ angular
                     ngClass: '=?',
                     required: '=?',
                     readonly: '@?',
-                    float: '@?',
+                    float: '=?',
                     beforecoma: '@?',
                     aftercoma: '@?',
                     prefix: '@?',
@@ -185,28 +185,7 @@ angular
             $scope.setdisabled = !$scope.setdisabled ? false : !!$scope.setdisabled,
             $scope.onBlur = !$scope.onBlur ? null : $scope.onBlur
             
-            $scope.Setting = {
-                id: !$scope.id ? "" : $scope.id,
-                model: !$scope.model ? "" : $scope.model,
-                ngclass: !$scope.ngClass ? "" : $scope.ngClass,
-                required: !$scope.required ? false : $scope.required,
-                readonly: !$scope.readonly ? false : ($scope.readonly == 'true'),
-                float: !$scope.float ? true : ($scope.float == "true"),
-                beforecoma: !$scope.beforecoma ? 4 : parseInt($scope.beforecoma),
-                aftercoma: !$scope.aftercoma ? 2 : parseInt($scope.aftercoma),
-                prefix: !$scope.prefix ? false : ($scope.prefix == 'true'),
-                subfix: !$scope.subfix ? false : ($scope.subfix == 'true'),
-                pcharacter: !$scope.pcharacter ? "" : $scope.pcharacter,
-                scharacter: !$scope.scharacter ? "" : $scope.scharacter,
-                decimal: !$scope.decimal ? 2 : parseInt($scope.decimal),
-                miles: !$scope.miles ? true : ($scope.miles == 'true'),
-                cssclass: !$scope.cssClass ? "" : $scope.cssClass,
-                default: !$scope.default ? "" : $scope.default,
-                zeros: !$scope.zeros ? true : ($scope.zeros == 'true'),
-                value: !$scope.value && $scope.value != 0 && $scope.value != '0' ? "" : $scope.value,
-                disabled: !$scope.setdisabled ? false : $scope.setdisabled,
-                onBlur: !$scope.onBlur ? null : $scope.onBlur
-            };
+           
 
             var CONSTANTES = {
                 regexZeros: /^(0+\,*0*)|(0+\.*0*)$/g
