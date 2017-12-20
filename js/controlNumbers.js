@@ -10,7 +10,7 @@ angular
                     ngClass: '=?',
                     required: '=?',
                     readonly: '@?',
-                    float: '=?',
+                    float: '@?',
                     beforecoma: '@?',
                     aftercoma: '@?',
                     prefix: '@?',
@@ -22,58 +22,72 @@ angular
                     cssclass: '@?',
                     setdisabled: '=?',
                     zeros: '@?',
-                    onBlur: "=?"
+                    onBlur: "=?",
+                    label: "@?",
+                    groupName:"@?",
+                    errorMarked: "=?",
+                    buildComplete: "=?",
+                    labelClass: "@?",
+                    inputContentClass: "@?"
                 },
                 templateUrl: './controlOnlyNumbers.html',
                 link: function (scope, elm, attrs) {
 
+                    var Format = {
+                        Decimal: function (value, dec) {
+                            var cd = [/\,/, '.'];
+                            cd = dec == ',' ? [/\./, ','] : cd;
+                            value = value.toString().replace(/\./g, '');
+                            return value.toString().replace(cd[0], cd[1]);
+                        },
+                        Integer: function (value) {
+                            value = value.toString().replace(/\./g, '');
+                            return parseInt(value).toString();
+            
+                        },
+                        Miles: function (value) {
+                            value = value.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
+                            value = value.split('').reverse().join('').replace(/^[\.]/, '');
+                            return value;
+                        },
+            
+                    };
+
                     var OnlyNumbers = scope.$parent.OnlyNumbers;
                     
-                    OnlyNumbers.prototype.Find = function (md, id) {
-                        var _brk = md.split('.');
-                        var s = $scope.$parent;
-                        this.selector = (id ? "#" + id : "") + "[model='" + md + "']";
-                        this.value = _brk.length > 1 ?s[_brk[0]][_brk[1]]:s[_brk[0]];
-                        this.node = d.querySelectorAll(this.selector);
-                        if (id) {
-                            for (var i = 0; i < this.node.length; i++)
-                                (function (indice, elemento) {
-                                    if (elemento.id == id) this.node = elemento;
-                                })(i, this.node[i])
+                    if(!CbuControl.prototype.hasOwnProperty('Required')){
+
+                        CbuControl.prototype.Disabled = function(value){
+                            this.scope.setdisabled = value;
+                            
                         }
-            
-                        return this;
-                    }
-            
-                    OnlyNumbers.prototype.Set = function (prop, value) {
-                        var execute = function (elemento) {
-                            if (/float|beforecoma|aftercoma|prefix|subfix|pcharacter|scharacter|decimal|miles|zeros/.test(prop)) {
-                                $scope.Setting[prop] = value;
-                                $scope[prop] = value;
-                            } else {
-                                elemento.children[0].children[0][prop] = value;
-                            }
+
+                        CbuControl.prototype.IsDisabled = function(value){
+                            return !!this.scope.setdisabled;
                         }
-            
-                        if (prop == "class") prop = prop + "Name";
-                        if (this.node.length > 1 && !this.first) {
-                            for (var i = 0; i < this.node.length; i++)
-                                (function (indice, elemento) {
-                                    execute(elemento);
-                                })(i, this.node[i])
-                        } else {
-                            execute(this.node[0]);
+
+                        CbuControl.prototype.IsRequired = function(value){               
+                            return !!this.scope.required;                          
                         }
-                        return this;
+
+                        CbuControl.prototype.Required = function(value){
+                                this.scope.required = value;       
+                        }
+
+                        CbuControl.prototype.AddClass = function(str){
+                            this.scope.cssclass += " "+str;
+                        }
+
+                        CbuControl.prototype.RemoveClass = function(str){
+                            this.scope.cssclass = this.scope.cssclass.replace(str,"");
+                        }
                     }
             
                     OnlyNumbers.prototype.Format = function (type, dec) {
                         return Format[type](this.value, dec);
                     }
             
-                    OnlyNumbers.prototype.End = function () {
-                        return this.value;
-                    }
+                   
             
                     var _newOnlyNumbersControl = new OnlyNumbers();
                     _newOnlyNumbersControl.node = document.getElementById(attrs.id);
@@ -114,25 +128,7 @@ angular
             
             if ($scope.hasOwnProperty("$parent") && !$scope.$parent.hasOwnProperty("OnlyNumbers")) {
                   
-                    var Format = {
-                        Decimal: function (value, dec) {
-                            var cd = [/\,/, '.'];
-                            cd = dec == ',' ? [/\./, ','] : cd;
-                            value = value.toString().replace(/\./g, '');
-                            return value.toString().replace(cd[0], cd[1]);
-                        },
-                        Integer: function (value) {
-                            value = value.toString().replace(/\./g, '');
-                            return parseInt(value).toString();
-            
-                        },
-                        Miles: function (value) {
-                            value = value.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
-                            value = value.split('').reverse().join('').replace(/^[\.]/, '');
-                            return value;
-                        },
-            
-                    };
+                 
             
                     $scope.$parent.OnlyNumbers = function () {
                         this.value = "";
@@ -358,8 +354,8 @@ angular
                     return false;
                 },
                 KeyFloatValidation: function (setting, text, obj, e, _this, _) {
-                    var cursor = _this.children[0].children[0].selectionStart;
-                    var end = _this.children[0].children[0].selectionEnd;
+                    var cursor = _this.children[0].children[1].children[1].selectionStart;
+                    var end = _this.children[0].children[1].children[1].selectionEnd;
                     var coma = text.indexOf(',');
                     var _break = text.indexOf(',') != -1 ? text.split(',') : [text, ""];
                     var regexzeros = /^0+\,*0*$/g;

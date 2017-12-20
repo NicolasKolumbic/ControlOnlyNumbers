@@ -2,10 +2,59 @@
 .after-icon-control-only-numbers{
     font-size: 18px;
 }
-.controlOnlyNumbers-css{
+
+.COU{
+    display: inline-block;
+    width:100%;
+}
+
+.COU label{
+    margin-top: 7px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.COU-content{
+    display: inline-block;
+    vertical-align: top;   
+}
+
+.COU-show-errors > *{
+    display: inline-block;
+    vertical-align: middle;
+    color: rgb(230, 5, 5);
+    font-size: 14px;
+}
+
+.COU-down-error{
+    text-align: right;
+    margin-top: 7px;
+   
+}
+.COU-down-error p {
+    margin:0;
+    padding-right: 5px;
+}
+
+.COU-inline-error{
+    text-align: left;
     display: inline-block;
 }
 
-control-only-numbers{
-    display: inline-block;
+.COU-inline-error p{
+    margin:0;
+    padding-left: 5px;
+}
+
+.es-obligatorio input{
+    background-color: #f7fce3;
+}
+
+.COU-error-marked label{
+    color: rgb(230, 5, 5);
+}
+
+.COU-error-marked input{
+    border-color:rgb(230, 5, 5);
+    color: rgb(230, 5, 5);
 }

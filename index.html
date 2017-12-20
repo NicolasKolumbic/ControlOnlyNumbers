@@ -8,6 +8,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <link href="controlNumbers.css" rel="stylesheet" />
+    <link href="test.css" rel="stylesheet" />
     <style>
         input.azul {
             background-color: rgba(55, 50, 240, 0.5);
@@ -19,15 +20,46 @@
 <body ng-app="myApp">
     <div ng-controller="OnlyNumbersController" class="container">
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-12">
+                    <h1>Control AngularJS Only Numbers para PISCYS</h1>
                 <form method="GET" ng-submit="Enviar($event)" class="form-inline">
+                        <p>
+                                <strong>Objetivo:</strong>Permitir la entrada de solo números decimales,enteros o valores de moneda.
+                            </p>
+                            <p>
+                                Desarrollado con los mismos criterios de los campos en AS DIRECT con HTML, CSS, AngularJS y Javascript.
+                            </p>
+                            <hr>
+                            <section>
+                                    <h5>Ejemplo básico:</h5>
+                                    <div>                     
+                                            <control-only-numbers id="exampleOne" model="Datos.MontoOne" label="Básico"></control-only-numbers>
+                                    </div>
+                                    <h5>Código: <strong>Javascript de Vista dentro del controlador</strong></h5>
+                                    <div class="code-example">                      
+<pre>
+    $scope.Datos = {
+        MontoOne: 1504.00,
+        ... 
+    }
+</pre>     
+                                    </div>
+                                    <h5>Código: <strong>HTML de Vista</strong></h5>
+                                    <div class="code-example">                      
+                                            <pre>
+                                                    <table class='code-table'><tr><td>1</td><td><span class='tag'>&lt;control-only-numbers</span> <span class='attr'>id</span>=<span class='value'>"exampleOne"</span> <span class='attr'>ng-model</span>=<span class='value'>"Datos.MontoOne"</span> <span class='attr'>label</span>=<span class='value'>"Básico"</span><span class='tag'>&gt;</span></td></tr><tr><td>2</td><td><span class='tag'>&lt;/control-only-numbers&gt;</span></td></tr></table>
+                                            </pre>     
+                                    </div>
+                                    <p>
+                                        Las propiedades obligatorias son <span>model</span> e <span>id</span>. El primero representa la relacion de la vista con el controlador Angular.js, la propiedad <span>ng-model</span>. La segunda es un id que identifica al control, es importante en caso que se encuentre mas de un control de este tipo en la vista y una mejora con respecto a los controles de <span>AS DIRECT</span> que automaticamente se genera un objeto en el <span>$scope</span> padre con el <span>id</span> provisto por la propiedad.
+                                    </p>
+                                    <p>
+                                        la propiedad <span>label</span> genera un etiqueta para el control con el string pasado por valor.
+                                    </p>
+                            </section>
+                   
                     <div>
-                        <label for="ValorPerCapita">Flotante</label>
-                        <control-only-numbers id="ValorPerCapita" model="Datos.MontoCapitas" required="true" beforecoma="10" aftercoma="3"></control-only-numbers>
-                    </div>
-                    <div>
-                        <label for="MontoDosId">Flotante 2</label>
-                        <control-only-numbers id="MontoDosId" model="Datos.MontoDos" required="true" aftercoma="3"></control-only-numbers>
+                        <control-only-numbers id="exampleTwo" model="Datos.MontoTwo" required="true" aftercoma="3"></control-only-numbers>
                     </div>
                     <div>
                         <label for="MontoTresId">Flotante 3</label>
@@ -81,8 +113,8 @@
     function OnlyNumbersController($scope) {
 
         $scope.Datos = {
-            MontoCapitas: 1504.00,
-            Monto: "1452",
+            MontoOne: 1504.00,
+            MontoTwo: "1452",
             MontoDos: "322",
             MontoTres: 32,
             MontoSeptimo: 0,
@@ -95,6 +127,7 @@
         $scope.MontoSexto = "0";
         $scope.MontoDecimo = "12";
 
+        debugger;
 
         $scope.Enviar = function (event) {
 
