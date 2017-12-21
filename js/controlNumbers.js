@@ -55,30 +55,30 @@ angular
 
                     var OnlyNumbers = scope.$parent.OnlyNumbers;
                     
-                    if(!CbuControl.prototype.hasOwnProperty('Required')){
+                    if(!OnlyNumbers.prototype.hasOwnProperty('Required')){
 
-                        CbuControl.prototype.Disabled = function(value){
+                        OnlyNumbers.prototype.Disabled = function(value){
                             this.scope.setdisabled = value;
                             
                         }
 
-                        CbuControl.prototype.IsDisabled = function(value){
+                        OnlyNumbers.prototype.IsDisabled = function(value){
                             return !!this.scope.setdisabled;
                         }
 
-                        CbuControl.prototype.IsRequired = function(value){               
+                        OnlyNumbers.prototype.IsRequired = function(value){               
                             return !!this.scope.required;                          
                         }
 
-                        CbuControl.prototype.Required = function(value){
+                        OnlyNumbers.prototype.Required = function(value){
                                 this.scope.required = value;       
                         }
 
-                        CbuControl.prototype.AddClass = function(str){
+                        OnlyNumbers.prototype.AddClass = function(str){
                             this.scope.cssclass += " "+str;
                         }
 
-                        CbuControl.prototype.RemoveClass = function(str){
+                        OnlyNumbers.prototype.RemoveClass = function(str){
                             this.scope.cssclass = this.scope.cssclass.replace(str,"");
                         }
                     }
@@ -164,8 +164,8 @@ angular
             $scope.buildComplete = angular.isUndefined($scope.buildComplete)?null: $scope.buildComplete;
             $scope.errorMessage = angular.isUndefined($scope.errorMessage)?"": $scope.errorMessage;
             $scope.errorMarked = angular.isUndefined($scope.errorMarked)?"": $scope.errorMarked;
-            $scope.labelClass = angular.isUndefined($scope.labelClass)?"col-xs-12 col-sm-12 col-md-2 col-lg-2":$scope.labelClass;
-            $scope.inputContentClass = angular.isUndefined($scope.inputContentClass)?"col-xs-12 col-sm-12 col-md-10 col-lg-10":$scope.inputContentClass;
+            $scope.labelClass = angular.isUndefined($scope.labelClass)?"col-xs-12 col-sm-12 col-md-4 col-lg-4":$scope.labelClass;
+            $scope.inputContentClass = angular.isUndefined($scope.inputContentClass)?"col-xs-12 col-sm-12 col-md-8 col-lg-8":$scope.inputContentClass;
             $scope.float = !$scope.float ? true : !!$scope.float;
             $scope.beforecoma = !$scope.beforecoma ? 4 : parseInt($scope.beforecoma);
             $scope.aftercoma = !$scope.aftercoma ? 2 : parseInt($scope.aftercoma);
@@ -245,6 +245,7 @@ angular
                     }
             
                     this.value = value.value != undefined ? value.value : "";
+                
                     s.actualizarModelo(setting.modelName, s.id);
             
                     if (s.onBlur != null && typeof s.onBlur == "function") {
@@ -372,9 +373,6 @@ angular
                             _.Stop(e);
             
                         }
-                        //if((regexzeros.test(text) || regexzeros.test(_break[0])){
-                        
-                        //}
             
                     }
             

@@ -5,6 +5,7 @@
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <link href="controlNumbers.css" rel="stylesheet" />
@@ -57,22 +58,168 @@
                                         la propiedad <span>label</span> genera un etiqueta para el control con el string pasado por valor.
                                     </p>
                             </section>
+                            <section>
+                                <h4><i class="fa fa-clone" aria-hidden="true"></i> Instancia del Objeto OnlyNumbers en el $Scope</h4>
+                                <p>Una de las cuestiones que sucedia en <span>AS DIRECT</span> era la imposibilidad de cambiar un estado dentro del controlador Angular.js, o mejor dicho. Los controles desarrollados no tiene tales opciones. Por ejemplo dependiendo de una configuración se desactive o active un control. Esta fue una mejora a plantear </p>
+                                <p>Como comente anteriormente cada vez que se crea una instancia del control <span>control-only-numbers</span> se génera una instancia de la clase Javascript <span>OnlyNumbers</span> dentro del <span>$scope</span> que contiene el control. </p>
+                                
+                                <div class="alert alert-warning">
+                                        <strong>IMPORTANTE!</strong> Debido al caracter asincronico de Angular.js puede que mientras se este contruendo la instancia del control se trate de ejecutar un metodo que cambie el estado del mismo; esta daria error. Para ello cualquier sentencia que cambie o interactue con una instancia debe ir dentro del metodo <strong>build-complete</strong>
+                                      </div>
+
+                                <div class="code-example">                      
+        <pre>
+            <span>// Desactiva el control.</span>
+            $scope.exampleTwo.Disabled(true);
+            <br>
+            <span>// Activa el control.</span>
+            $scope.exampleTwo.Disabled(false);
+        </pre>     
+                                </div>
+                                <section>
+                                        <div id="tabs-control1">
+                                                <ul>
+                                                        <li><a href="#tabs-1">Vista</a></li>
+                                                  <li><a href="#tabs-2">HTML</a></li>
+                                                  <li><a href="#tabs-3">Javascript</a></li>
+        
+                                                </ul>
+                                                <div id="tabs-1">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                    <control-only-numbers id="exampleTwo" model="Datos.MontoTwo" label="Ejemplo 2"></control-only-numbers>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                    <button type="button" id="btnActivar" class="btn btn-success" ng-click="Activar()">Activar</button>
+                                                                    <button type="button" id="btnDesactivar" class="btn btn-success" ng-click="Desactivar()">Desactivar</button>
+                                                            </div>
+                                                               
+                                                              
+                                                        </div>
+                                                </div>
+                                                <div id="tabs-2">
+                                                        <div class="code-example-html">  
+                                                <code>
+                                                    
+                                                        <table><tr><td>0</td><td><code>&nbsp;&nbsp;</code><span class='tag'>&lt;div</span> <span class='attr'>class</span>=<span class='value'>"row"</span> <span class='tag'>&gt;</span></td></tr><tr><td>1</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;div</span> <span class='attr'>class</span>=<span class='value'>"col-sm-6"</span> <span class='tag'>&gt;</span></td></tr><tr><td>2</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;control-only-numbers</span> <span class='attr'>id</span>=<span class='value'>"exampleTwo"</span> <span class='attr'>label</span>=<span class='value'>"Ejemplo 2"</span> <span class='tag'>&gt;</span></td></tr><tr><td>3</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;/control-only-numbers&gt;</span></td></tr><tr><td>4</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;/div&gt;</span></td></tr><tr><td>5</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;div</span> <span class='attr'>class</span>=<span class='value'>"col-sm-6"</span> <span class='tag'>&gt;</span></td></tr><tr><td>6</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;button type="button" id="btnActivar" class="btn btn-success" ng-click="Activar()"&gt;</span> <span class='attr'>type</span>=<span class='value'>"button"</span> <span class='attr'>id</span>=<span class='value'>"btnActivar"</span> <span class='tag'>&gt;</span><span class='tag'>&</span></td></tr><tr><td>7</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;button type="button" id="btnDesactivar" class="btn btn-success" ng-click="Desactivar()"&gt;</span> <span class='attr'>type</span>=<span class='value'>"button"</span> <span class='attr'>id</span>=<span class='value'>"btnDesactivar"</span> <span class='tag'>&gt;</span><span class='tag'>&</span></td></tr><tr><td>8</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;/div&gt;</span></td></tr><tr><td>9</td><td><code>&nbsp;&nbsp;</code><span class='tag'>&lt;/div&gt;</span></td></tr></table>
+                                                </code>
+                                                   </div>     
+                                                       
+                                                </div>
+                                                <div id="tabs-3">
+                                                        <div class="code-example">                      
+        <pre>
+            $scope.Datos = {
+                NumeroCBUtwo:""
+            }
+        
+            $scope.Activar = function(){
+                $scope.ComponentCBUtwo.Disabled(false);     
+            }
+        
+            $scope.Desactivar = function(){
+                $scope.ComponentCBUtwo.Disabled(true);     
+            }
+        </pre>     
+                                                        </div>
+                                                       
+                                                </div>
+                                              
+                                              </div>
+                                </section>
+                                <section>
+                                        <p>En el ejemplo se utilizan dos botones para <span>Activar</span> y <span>Desactivar</span> el campo de entrada de CBU. Los botones utilizan la directiva <span>ng-click</span> para vincular los eventos a los botones. Los métodos se encuentran en la solapa <span>Javascript</span> junto al <span>ng-model</span>.</p>
+                                    </section>
+                                    <section>
+                                            <p>
+                                                La siguiente imagen muestra una instancia de la clase Javascript <span>CbuControl</span> (<span>console.dir()</span> imprime un objeto JS como un árbol de clave/valor) con una serie de propiedades que permiten su funcionamiento.
+                                            </p>
+                                            <img src="imagen1.jpg" />
+                                        </section>
+                                        <hr>
+                                        <section>
+                                                <h4><i class="fa fa-file-text-o" aria-hidden="true"></i>Propiedades</h4>
+                                                <h6>required</h6>
+                                                <p>
+                                                    Define el campo como requerido. Equivale a la propiedad HTML <span>required</span>. Al definir esta propiedad como verdadera cada vez que sea haga foco(focus) y luego se salga(blur) ejecutara un mensaje de error. Cuando un campo es obligatorio tiene un fondo amarrillo palido como <span>AS DIRECT</span>. 
+                                                </p>
+                                                <div class="code-example-html">  
+                                                        <code>
+                                                                <table class='code-table'><tr><td>1</td>
+                                                                    <td><span class='tag'>&lt;control-cbu</span> <span class='attr'>id</span>=<span class='value'>"ComponentCBUone"</span> <span class='attr'>label</span>=<span class='value'>"CBU"</span> <span class='attr'>required</span>=<span class='value'>"true"</span><span class='tag'>&gt;</span></td></tr><tr><td>2</td><td><span class='tag'>&lt;/control-cbu&gt;</span></td></tr></table>
+                                                        </code>
+                                                </div>
+                                                <p>
+                                                        <control-only-numbers id="exampleTwo" model="Datos.MontoThree" label="Campo Requerido" required="true"></control-only-numbers>
+                                                </p>
+                                                <hr>
+                                                <h6>setdisabled</h6>
+                                                <p>
+                                                    Define el campo como desactivado. Equivale a la propiedad HTML <span>disabled</span>. Al definir esta propiedad como verdadera el control toma de color de fondo un color gris y el cursor cambia evitando que se pueda editar el valor. 
+                                                </p>
+                                                <div class="code-example-html">  
+                                                        <code>
+                                                            
+                                                                <table class='code-table'><tr><td>1</td><td><span class="tag">&lt;div&gt;</span>
+                                                                    </td></tr><tr><td>2</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;control-cbu</span> <span class='attr'>id</span>=<span class='value'>"ComponentCBUfour"</span> <span class='attr'>label</span>=<span class='value'>"CBU"</span> <span class='attr'>setdisabled</span>=<span class='value'>"true"</span><span class='tag'>&gt;</span></td></tr><tr><td>3</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;/control-cbu&gt;</span></td></tr><tr><td>4</td><td><span class='tag'>&lt;/div&gt;</span></td></tr></table>
+                                                        </code>
+                                                </div>
+                                                <p>
+                                                        <control-only-numbers id="exampleFour" model="Datos.MontoFour" label="Campo Desactivado" setdisabled="true"></control-only-numbers>
+                                                </p>  
+                                                <hr>
+                                                <h6>cssclass</h6>
+                        <p>
+                            Define una clase <span>css</span> para el campo. En la estructura interna del control; este esta formado por una serie de divs, un label, spans y un input al que se le escribirá el atributo. 
+                        </p>
+                        <div class="code-example-html">  
+                                <code>
+                                        <table class='code-table'><tr><td>1</td><td><span class="tag">&lt;div&gt;</span>
+                                            </td></tr><tr><td>2</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;control-cbu</span> <span class='attr'>id</span>=<span class='value'>"ComponentCBUfive"</span> <span class='attr'>label</span>=<span class='value'>"CBU"</span> <span class='attr'>cssclass</span>=<span class='value'>"blurControl"</span><span class='tag'>&gt;</span></td></tr><tr><td>3</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;/control-cbu&gt;</span></td></tr><tr><td>4</td><td><span class='tag'>&lt;/div&gt;</span></td></tr></table>
+                                </code>
+                        </div>
+                        <div class="code-example-html">  
+                                <code>
+                                    <prev>
+                                        .blurControl{<br>
+                                        <code>&nbsp;&nbsp;</code>background-color: #b7cce680 !important;<br>
+                                        <code>&nbsp;&nbsp;</code>border:2px solid skyblue;<br>
+                                        <code>&nbsp;</code>}
+                                    </prev>   
+                                </code>
+                        </div>
+                        <p>
+                                <control-only-numbers id="exampleFive" model="Datos.MontoFive" label="Agregar una clase" cssclass="blurControl"></control-only-numbers>
+                        </p>
+                        <hr>
+                        <h6>ng-class</h6>
+                        <p>
+                            Equivale al atributo Angular.js <span>ng-class</span> al cual se le puede pasar por valor un objeto JS que determine una clase css. 
+                        </p>
+                        <div class="code-example-html">  
+                                <code>
+                                    
+                                        <table class='code-table'><tr><td>1</td><td><span class="tag">&lt;div&gt;</span>
+                                            </td></tr><tr><td>2</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;control-cbu</span> <span class='attr'>id</span>=<span class='value'>"ComponentCBUseven"</span> <span class='attr'>label</span>=<span class='value'>"CBU"</span><span class='tag'>&gt;</span></td></tr><tr><td>3</td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;</code><span class='tag'>&lt;/control-cbu&gt;</span></td></tr><tr><td>4</td><td><span class='tag'>&lt;/div&gt;</span></td></tr></table>
+                                </code>
+                        </div>
+                        <div class="code-example-html">  
+                                <code>
+                                    <prev>  
+                                        .redControl{<br>
+                                        <code>&nbsp;&nbsp;</code>background-color: #e6b7cb80 !important;<br>
+                                        <code>&nbsp;&nbsp;</code> border:2px solid rgb(241, 92, 92);<br>
+                                        <code>&nbsp;</code>}
+                                    </prev>   
+                                </code>
+                        </div>
+                        
+                        <p>
+                                <control-cbu id="ComponentCBUseven" model="Datos.NumeroCBUseven" label="CBU" ng-class="{redControl:true}"></control-cbu>
+                        </p>
+                                        </section>
                    
-                    <div>
-                        <control-only-numbers id="exampleTwo" model="Datos.MontoTwo" required="true" aftercoma="3"></control-only-numbers>
-                    </div>
-                    <div>
-                        <label for="MontoTresId">Flotante 3</label>
-                        <control-only-numbers id="MontoTresId" model="Datos.MontoTres" readonly="true"></control-only-numbers>
-                    </div>
-                    <div>
-                        <label for="MontoCuatroId">Flotante 4</label>
-                        <control-only-numbers id="MontoCuatroId" model="MontoCuatro" disabled="true"></control-only-numbers>
-                    </div>
-                    <div>
-                        <label for="MontoQuintoId">Flotante 5</label>
-                        <control-only-numbers id="MontoQuintoId" model="MontoQuinto"></control-only-numbers>
-                    </div>
+                  
                     <div>
                         <label for="MontoSextoId">Integer 6</label>
                         <control-only-numbers id="MontoSextoId" model="MontoSexto" miles="false" float="false"></control-only-numbers>
@@ -104,30 +251,42 @@
         </div>
     </div>
 </body>
+<script
+src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="js/angular.min.js"></script>
 <script type="text/javascript" src="js/controlNumbers.js"></script>
 <script type="text/javascript">
+     $("#tabs-control1,#tabs-control2,#tabs-control3,#tabs-control5").tabs();
+
     angular.module('myApp')
         .controller('OnlyNumbersController', OnlyNumbersController);
 
     function OnlyNumbersController($scope) {
 
         $scope.Datos = {
-            MontoOne: 1504.00,
+            MontoOne: 150.00,
             MontoTwo: "1452",
-            MontoDos: "322",
-            MontoTres: 32,
+            MontoThree: "1475,20",
+            MontoFour: 32,
             MontoSeptimo: 0,
             MontoOctavo: 0,
             MontoNoveno: 12,
 
         }
         $scope.MontoCuatro = "36";
-        $scope.MontoQuinto = "31456";
+        $scope.MontoQuinto = "3145";
         $scope.MontoSexto = "0";
         $scope.MontoDecimo = "12";
 
-        debugger;
+        $scope.Activar = function(){
+            debugger;
+            $scope.exampleTwo.Disabled(false);     
+        }
+
+        $scope.Desactivar = function(){
+            $scope.exampleTwo.Disabled(true);     
+        }
 
         $scope.Enviar = function (event) {
 
