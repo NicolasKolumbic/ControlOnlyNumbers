@@ -1,3 +1,32 @@
+if (!Array.prototype.includes) {
+    Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
+      'use strict';
+      var O = Object(this);
+      var len = parseInt(O.length) || 0;
+      if (len === 0) {
+        return false;
+      }
+      var n = parseInt(arguments[1]) || 0;
+      var k;
+      if (n >= 0) {
+        k = n;
+      } else {
+        k = len + n;
+        if (k < 0) {k = 0;}
+      }
+      var currentElement;
+      while (k < len) {
+        currentElement = O[k];
+        if (searchElement === currentElement ||
+           (searchElement !== searchElement && currentElement !== currentElement)) {
+          return true;
+        }
+        k++;
+      }
+      return false;
+    };
+  }
+
 angular
     .module('myApp', [])
     .directive('controlOnlyNumbers',
@@ -9,8 +38,8 @@ angular
                     model: '=',
                     ngClass: '=?',
                     required: '=?',
-                    readonly: '@?',
-                    float: '@?',
+                    readonly: '=?',
+                    float: '=?',
                     beforecoma: '@?',
                     aftercoma: '@?',
                     prefix: '@?',
@@ -21,7 +50,7 @@ angular
                     miles: '@?',
                     cssclass: '@?',
                     setdisabled: '=?',
-                    zeros: '@?',
+                    zeros: '=?',
                     onBlur: "=?",
                     label: "@?",
                     groupName:"@?",
@@ -54,6 +83,46 @@ angular
                     };
 
                     var OnlyNumbers = scope.$parent.OnlyNumbers;
+
+                    function Group(){
+                        this.groupName = "";
+                        this.domnodes = null;
+                        this.scopes = null;
+                        this.ids = null;
+                    }
+
+                    Group.prototype.Set = function(prop,value){
+                        value = /false|true/.test(value)?value=='true':value;
+                        this.scopes.forEach(function(element){
+                            if(element.hasOwnProperty(prop)){
+                                if(/model/.test(prop)){
+                                    value = scope.Methods.Init(value);
+                                }
+                                element[prop] = value;
+                                if(/miles|float/.test(prop)){
+                                    element.model = element.Methods.blur.call(document.querySelector(element.id),{},element);
+                                }
+                                if(/zeros/.test(prop)){
+                                    element.model = element.Methods.Init(element.model);
+                                }
+                            }else{
+                                console.error("No existe la propiedad "+prop+" en alguna de las instancias")
+                            }
+                            
+                        });   
+                    }
+
+                    Group.prototype.GetModels = function(){
+                        this.scopes.forEach(function(element){
+                            if(element.hasOwnProperty(prop)){
+                                
+                                element[prop] = value;
+                            }else{
+                                console.error("No existe la propiedad "+prop+" en alguna de las instancias")
+                            }
+                            
+                        });
+                    }
                     
                     if(!OnlyNumbers.prototype.hasOwnProperty('Required')){
 
@@ -81,14 +150,40 @@ angular
                         OnlyNumbers.prototype.RemoveClass = function(str){
                             this.scope.cssclass = this.scope.cssclass.replace(str,"");
                         }
+
+                        OnlyNumbers.prototype.Format = function (type, dec) {
+                            return Format[type](this.value, dec);
+                        }
+
+                        OnlyNumbers.Controls = [];
+                        OnlyNumbers.Groups = {};
+
+                        OnlyNumbers.getElementByGroup = function(gn){
+                           var instance = new Group();
+                           instance.groupName = gn;
+                           instance.domnodes = document.querySelectorAll("[group-name='"+gn+"']");
+                           instance.ids = OnlyNumbers.Groups[gn];
+                           instance.scopes = (function(){
+                               var m = [];
+                               for(var i in OnlyNumbers.Groups[gn]){
+                                   var s = OnlyNumbers.Groups[gn][i]
+                                    m.push(scope.$parent.$parent[s.id].scope);
+
+                               }
+                               return m;
+                           })();
+                           return instance;
+                        }
+
                     }
-            
-                    OnlyNumbers.prototype.Format = function (type, dec) {
-                        return Format[type](this.value, dec);
+
+                    if(OnlyNumbers.Controls.indexOf(attrs.id) < 0){
+                        OnlyNumbers.Controls.push(attrs.id)  
+                    }else{
+                        console.error("El ID:"+attrs.id+" ya esta implementado en la vista.");
+                        return;
                     }
-            
-                   
-            
+
                     var _newOnlyNumbersControl = new OnlyNumbers();
                     _newOnlyNumbersControl.node = document.getElementById(attrs.id);
                     _newOnlyNumbersControl.value = scope.model;
@@ -96,6 +191,16 @@ angular
                     _newOnlyNumbersControl._id = attrs.id;
                     _newOnlyNumbersControl.scope = scope;
 
+                    if(scope.groupName != ""){
+                        if(!OnlyNumbers.Groups.hasOwnProperty(scope.groupName))OnlyNumbers.Groups[scope.groupName] = [];
+                        var n = {
+                            id: attrs.id,
+                            model:attrs.model
+                        }
+                        OnlyNumbers.Groups[scope.groupName].push(n);
+                    }
+
+                   
                     scope.$parent.$parent[attrs.id] = _newOnlyNumbersControl;
 
                     scope.Setting.modelName = attrs.model;
@@ -105,7 +210,7 @@ angular
                         scope.Methods.keyUp.call(this, event);
                     })
                     elm.on('keyup', function (event) {
-                        var obj = this.children[0].children[0];
+                        var obj = this.children[0].children[1].children[1];
                         if(obj.value) obj.value = obj.value.replace(/[^0-9,.]/g, '');
                     });
                        
@@ -115,6 +220,20 @@ angular
                     elm.find('input').on('blur', function (event) {
                         scope.Methods.blur.call(this, event);
                     });
+
+                    elm.find('input')[0].addEventListener('paste',function(event){
+                       
+                        var clipboardData = event.clipboardData || window.clipboardData || event.originalEvent.clipboardData;
+                        var data = clipboardData.getData('text/plain');
+                        data = data.replace(/[^0-9,.]/g, '');
+                        event.preventDefault();
+                        this.value = data;
+                        scope.actualizarModelo(attrs.model,attrs.id);
+                       
+                        
+                    });
+
+                  
                    
     
     
@@ -127,9 +246,7 @@ angular
             
             
             if ($scope.hasOwnProperty("$parent") && !$scope.$parent.hasOwnProperty("OnlyNumbers")) {
-                  
-                 
-            
+
                     $scope.$parent.OnlyNumbers = function () {
                         this.value = "";
                         this.node = null;
@@ -166,25 +283,24 @@ angular
             $scope.errorMarked = angular.isUndefined($scope.errorMarked)?"": $scope.errorMarked;
             $scope.labelClass = angular.isUndefined($scope.labelClass)?"col-xs-12 col-sm-12 col-md-4 col-lg-4":$scope.labelClass;
             $scope.inputContentClass = angular.isUndefined($scope.inputContentClass)?"col-xs-12 col-sm-12 col-md-8 col-lg-8":$scope.inputContentClass;
-            $scope.float = !$scope.float ? true : !!$scope.float;
+            $scope.float = angular.isUndefined($scope.float)? true : $scope.float;
             $scope.beforecoma = !$scope.beforecoma ? 4 : parseInt($scope.beforecoma);
             $scope.aftercoma = !$scope.aftercoma ? 2 : parseInt($scope.aftercoma);
             $scope.prefix = !$scope.prefix ? false : !!$scope.prefix;
             $scope.pcharacter = !$scope.pcharacter ? "" : !!$scope.pcharacter;
             $scope.scharacter = !$scope.scharacter ? "" : !!$scope.scharacter;
-            $scope.decimal = !$scope.decimal ? 2 : parseInt($scope.decimal),
-            $scope.miles = !$scope.miles ? true : !!$scope.miles;
+            $scope.miles = angular.isUndefined($scope.miles)? true : $scope.miles == 'true';
             $scope.cssclass = !$scope.cssClass ? "" : $scope.cssClass;
             $scope.default = !$scope.default ? "" : $scope.default;
-            $scope.zeros = !$scope.zeros ? true : !!$scope.zeros;
-            $scope.value = !$scope.value && $scope.value != 0 && $scope.value != '0' ? "" : $scope.value;
+            $scope.zeros = angular.isUndefined($scope.zeros)? true : $scope.zeros == 'true';
             $scope.setdisabled = !$scope.setdisabled ? false : !!$scope.setdisabled,
-            $scope.onBlur = !$scope.onBlur ? null : $scope.onBlur
+            $scope.onBlur = !$scope.onBlur ? null : $scope.onBlur;
+            $scope.groupName = angular.isUndefined($scope.groupName)? "" : $scope.groupName;
             
            
 
             var CONSTANTES = {
-                regexZeros: /^(0+\,*0*)|(0+\.*0*)$/g
+                regexZeros: /^0*[\,0*]*$/
             }
             
             
@@ -198,10 +314,10 @@ angular
                     }
                     return icon;
                 },
-                blur: function (event) {
-                    var _ = $scope.Methods;
-                    var setting = $scope.Setting;
-                    var s = $scope;
+                blur: function (event,instance) {
+                    var s = instance?instance:$scope;
+                    var _ = s.Methods;
+                    var setting = s.Setting;
                     var m = setting.modelName.split(".");
                     var value = _.findScope($scope, m, setting, this, _, event);
                     var splitModel = function () {
@@ -222,13 +338,14 @@ angular
                         if (value.value.indexOf(',') == -1 && value.value.replace(/\,/, '').length > s.beforecoma) {
                             this.value = ""
                             s.model = "";
-                            $s.$apply(splitModel);
+                            s.$apply(splitModel);
                             return;
             
                         }
             
                         if (s.float && value.value != "") {
                             _.BlurFloatValidation(value.value, value, s, _)
+                           
                         } else if (value.value != "") {                    
                             value.value = parseInt(value.value).toString();
                             if (s.miles && value.value.toString().length > 3) {
@@ -253,6 +370,7 @@ angular
                         s.onBlur(blurObject, setting.modelName, s.id);
                        
                     }
+                    if(instance)return value.value;
                    
                 },
                 keyUp: function (event, ModelCtrl) {
@@ -264,7 +382,10 @@ angular
                     
                     if (value.res) { 
                         
-                        if (event.shiftKey) {
+                        if(event.ctrlKey && (/67|86/.test(event.which))){
+                            return true;
+                        }
+                        else if (event.shiftKey) {
                             _.Stop(event);
                         }
                         else if (event.which == 188 || event.which == 44) {
@@ -275,8 +396,7 @@ angular
                             _.Stop(event);
                         } else if (event.which == 64 || event.which == 16) {
                             _.Stop(event);
-                        } else if ((event.which >= 48 && event.which <= 57) || (event.which >= 96 && event.which <= 105)) {
-                           
+                        } else if ((event.which >= 48 && event.which <= 57) || (event.which >= 96 && event.which <= 105)) {    
                             if (s.float) {
                                 if (value.value) _.KeyFloatValidation(s, value.value, value, event, this, _);
                             } else if (!s.float) {
@@ -290,25 +410,25 @@ angular
                         }
                     } else if (!value.res && !s.zeros && /96|48/.test(event.which.toString())) {
                        
-                        var cursor = this.children[0].children[0].selectionStart;
-                        var end = this.children[0].children[0].selectionEnd;
+                        var cursor = this.children[0].children[1].children[1].selectionStart;
+                        var end = this.children[0].children[1].children[1].selectionEnd;
                         var coma = value.value.indexOf(',');
-                        var v = this.children[0].children[0].value;
+                        var v = this.children[0].children[1].children[1].value;
                         var _break = v.indexOf(',') != -1 ? v.split(',') : [v, ""];
                         if (coma != -1 && cursor > coma) {
                             if (_break[1].length > s.aftercoma - 1 && cursor == end) {                     
-                                _.Stop(e);
+                                _.Stop(event);
                             }
                         } else {
                             if (s.miles && _break[0] != '') _break[0] = _break[0].replace(/\./g, '');
                             if ((_break[0].length > s.beforecoma - 1 && coma) && cursor == end) {
-                                _.Stop(e);
+                                _.Stop(event);
                             }                 
             
                         }
                      
                         
-                    } else if ((value.value == "" && !value.res) || (value.value == "0," && (event.which == 188 || event.which == 44)) || (!value.res && !s.zeros && /96|48/.test(event.which.toString()))) {
+                    } else if ((value.value == "" && !value.res) || (value.value == "0," && (event.which == 188 || event.which == 44)) || (!value.res && /96|48/.test(event.which.toString()))) {
                         _.Stop(event);
                     }
                    
@@ -327,7 +447,10 @@ angular
                         obj.res = false;
                     }
                     
-                    obj.value = obj.model[!value[1] ? value[0] : value[1]] && parseFloat(obj.model[!value[1] ? value[0] : value[1]].replace(/\,/,'.')) > 0 ? obj.model[!value[1] ? value[0] : value[1]].toString() : _.InputValueZeroUndefined(setting, obj.model[!value[1] ? value[0] : value[1]], _, e, obj);
+                    var modelExist =  obj.model[!value[1] ? value[0] : value[1]];
+                    var mayorCero = parseFloat(modelExist.replace(/\,/,'.'));
+
+                    obj.value = modelExist && mayorCero > 0 ? modelExist.toString() : _.InputValueZeroUndefined(s, modelExist, _, e, obj);
                     if ((obj.value == "" && e == undefined) || (isNaN(obj.value.replace(/\./g,'').replace(/\,/,'.')) && e.type == "blur")) {
                         obj.res = false;
                         obj.value = "";
@@ -359,7 +482,7 @@ angular
                     var end = _this.children[0].children[1].children[1].selectionEnd;
                     var coma = text.indexOf(',');
                     var _break = text.indexOf(',') != -1 ? text.split(',') : [text, ""];
-                    var regexzeros = /^0+\,*0*$/g;
+                    var regexzeros = /^0*[\,0*]*$/g;
                     
             
                     if (coma != -1 && cursor > coma) {
@@ -375,15 +498,20 @@ angular
                         }
             
                     }
-            
-                    obj.value = _break[0] + "," + _break[1]
+
+                    obj.value = _break[0] + "," + _break[1];
+
+                    if(!setting.zeros && regexzeros.test(obj.value)){
+                        _.Stop(e);
+                    }
+
                     obj.res = true;
                     return true;
                 },
                 KeyIntergerValidation: function (setting, text, obj, e, _this, _) {
                     if (setting.miles && text != '') text = text.replace(/\./g, '');
-                    var cursor = _this.children[0].children[0].selectionStart;
-                    var end = _this.children[0].children[0].selectionEnd;
+                    var cursor = _this.children[0].children[1].children[1].selectionStart;
+                    var end = _this.children[0].children[1].children[1].selectionEnd;
                     text = parseInt(text).toString();
                     if (text.length > setting.beforecoma - 1 && cursor == end) {
                         _.Stop(e);
@@ -428,7 +556,8 @@ angular
                     var txt = "";
                     var err = "";
                     if (!$scope.float) {
-                        txt = value.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
+                        txt = parseInt(value);
+                        txt = txt.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
                         txt = txt.split('').reverse().join('').replace(/^[\.]/, '');
             
                     } else {
@@ -439,14 +568,18 @@ angular
                             err = "<!>";
                             console.error("%cError: La configuración actual del Control (beforecoma o aftercoma) no soporta el valor ingresado por ng-model ", "color:red;padding:3px;font-size:14px;");
                         }
-                        txt = _break[0].split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
-                        txt = txt.split('').reverse().join('').replace(/^[\.]/, '');
+                        txt = _break[0];
+                        if($scope.miles){
+                            txt = _break[0].split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.');
+                            txt = txt.split('').reverse().join('').replace(/^[\.]/, '');
+                        }
                         txt = err + txt + "," + _break[1] + err;
                     }
-                    if(CONSTANTES.regexZeros.test(txt) && !$scope.zeros){
+                    if(parseFloat(txt.replace(',','.')) <= 0 && !$scope.zeros){
                         txt = "";
                     }
-                    $scope.model = txt
+                    $scope.model = txt;
+                    return txt;
                 },
             }
             
